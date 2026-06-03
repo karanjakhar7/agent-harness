@@ -1,0 +1,2 @@
+"""Procurement backend application package."""
+

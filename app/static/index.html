@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Procurement Agent</title>
+  <style>
+    :root {
+      --bg: #f8f9fa;
+      --surface: #ffffff;
+      --border: #e2e8f0;
+      --text: #1a202c;
+      --text-muted: #718096;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --info: #6366f1;
+      --danger: #ef4444;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      font-size: 14px;
+      color: var(--text);
+      background: var(--bg);
+      min-height: 100vh;
+    }
+
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 24px;
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+    }
+
+    .logo {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 20px;
+      padding: 20px 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+    }
+
+    .panel h2 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+
+    /* Form */
+    .field {
+      margin-bottom: 12px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .field input,
+    .field textarea,
+    .field select {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--text);
+      background: var(--surface);
+      transition: border-color 0.15s;
+      outline: none;
+    }
+
+    .field input:focus,
+    .field textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+    }
+
+    .field textarea {
+      resize: vertical;
+      min-height: 72px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: background 0.15s, opacity 0.15s;
+    }
+
+    .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .btn-primary:hover:not(:disabled) { background: var(--accent-hover); }
+
+    .btn-success {
+      background: var(--success);
+      color: #fff;
+    }
+
+    .btn-success:hover:not(:disabled) { background: #059669; }
+
+    .btn-danger {
+      background: var(--danger);
+      color: #fff;
+    }
+
+    .btn-danger:hover:not(:disabled) { background: #dc2626; }
+
+    .btn-ghost {
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      width: 100%;
+      justify-content: flex-start;
+      text-align: left;
+      margin-bottom: 6px;
+      font-size: 13px;
+    }
+
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      margin: 20px 0 10px;
+    }
+
+    /* Spinner */
+    .spinner {
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .badge-success { background: #d1fae5; color: #065f46; }
+    .badge-warning { background: #fef3c7; color: #92400e; }
+    .badge-info    { background: #e0e7ff; color: #3730a3; }
+    .badge-danger  { background: #fee2e2; color: #991b1b; }
+    .badge-neutral { background: #f1f5f9; color: #475569; }
+
+    .risk-low  { background: #d1fae5; color: #065f46; }
+    .risk-med  { background: #fef3c7; color: #92400e; }
+    .risk-high { background: #fee2e2; color: #991b1b; }
+
+    /* Result panel */
+    #empty-state {
+      color: var(--text-muted);
+      font-size: 13px;
+      text-align: center;
+      padding: 48px 0;
+    }
+
+    .run-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .run-id {
+      font-family: "SF Mono", "Fira Code", monospace;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .card {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+    }
+
+    .card-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+
+    .decision-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+
+    .decision-action {
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .reason {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-top: 6px;
+    }
+
+    .flags {
+      margin-top: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .flag-chip {
+      font-size: 11px;
+      padding: 2px 8px;
+      background: #fef3c7;
+      color: #92400e;
+      border-radius: 4px;
+      font-family: "SF Mono", "Fira Code", monospace;
+    }
+
+    /* PO card */
+    .po-card {
+      background: #f0fdf4;
+      border-color: #bbf7d0;
+    }
+
+    .po-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .po-table td {
+      padding: 4px 0;
+      vertical-align: top;
+    }
+
+    .po-table td:first-child {
+      color: var(--text-muted);
+      width: 140px;
+      padding-right: 12px;
+    }
+
+    .po-table td:last-child {
+      font-weight: 500;
+    }
+
+    /* Tool trace */
+    .trace-toggle {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      padding: 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .trace-toggle:hover { color: var(--text); }
+
+    .trace-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .trace-item {
+      border-left: 3px solid var(--border);
+      padding: 8px 12px;
+      border-radius: 0 4px 4px 0;
+      background: var(--bg);
+      font-size: 13px;
+    }
+
+    .trace-item.trace-success { border-left-color: var(--success); }
+    .trace-item.trace-blocked { border-left-color: var(--warning); }
+    .trace-item.trace-error   { border-left-color: var(--danger); }
+
+    .trace-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .trace-tool {
+      font-family: "SF Mono", "Fira Code", monospace;
+      font-weight: 600;
+    }
+
+    .trace-details {
+      margin-top: 6px;
+      font-size: 12px;
+    }
+
+    .trace-details summary {
+      cursor: pointer;
+      color: var(--text-muted);
+      user-select: none;
+      margin-bottom: 4px;
+    }
+
+    .trace-details summary:hover { color: var(--text); }
+
+    .trace-pre {
+      background: #1e293b;
+      color: #e2e8f0;
+      border-radius: 4px;
+      padding: 10px 12px;
+      overflow-x: auto;
+      font-family: "SF Mono", "Fira Code", monospace;
+      font-size: 11px;
+      line-height: 1.5;
+      margin-top: 4px;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .trace-error-msg {
+      color: var(--danger);
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    /* Action block */
+    .action-block {
+      border-radius: 0 6px 6px 0;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .action-block.approve-block {
+      background: #fffbeb;
+      border-left: 4px solid var(--warning);
+    }
+
+    .action-block.clarify-block {
+      background: #eff6ff;
+      border-left: 4px solid var(--info);
+    }
+
+    .action-block h3 {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .action-block .action-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+
+    .action-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .action-error {
+      color: var(--danger);
+      font-size: 12px;
+      margin-top: 6px;
+    }
+
+    @media (max-width: 768px) {
+      main { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <span class="logo">Procurement Agent</span>
+  <span class="subtitle">AI-assisted purchase approval</span>
+</header>
+
+<main>
+  <!-- LEFT: Request form -->
+  <section class="panel">
+    <h2>New Request</h2>
+
+    <form id="request-form">
+      <div class="field">
+        <label>User ID</label>
+        <input id="user-id" type="text" value="u_demo" autocomplete="off">
+      </div>
+      <div class="field">
+        <label>Department</label>
+        <input id="department" type="text" value="engineering" autocomplete="off">
+      </div>
+      <div class="field">
+        <label>Message</label>
+        <textarea id="message" placeholder="Describe what you want to purchase…"></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary" id="submit-btn">
+        Submit Request
+      </button>
+    </form>
+
+    <p class="section-label">Demo scenarios</p>
+    <button class="btn btn-ghost quick-btn" data-scenario="0">
+      3 Figma seats — auto-approved ✓
+    </button>
+    <button class="btn btn-ghost quick-btn" data-scenario="1">
+      2 MacBook Pros — needs approval (hardware)
+    </button>
+    <button class="btn btn-ghost quick-btn" data-scenario="2">
+      Oracle license — needs clarification
+    </button>
+    <button class="btn btn-ghost quick-btn" data-scenario="3">
+      10 Figma seats — needs approval (over $5k)
+    </button>
+  </section>
+
+  <!-- RIGHT: Result -->
+  <section class="panel" id="result-panel">
+    <div id="empty-state">Submit a request to see the agent response.</div>
+    <div id="result-content" hidden></div>
+  </section>
+</main>
+
+<script>
+  const API_BASE = '';
+
+  const SCENARIOS = [
+    {
+      userId: 'u_demo',
+      department: 'marketing',
+      message: 'Please purchase 3 Figma Enterprise seats for the marketing department, total budget under 3000 USD.'
+    },
+    {
+      userId: 'u_demo',
+      department: 'engineering',
+      message: 'Please purchase 2 MacBook Pros for the engineering department.'
+    },
+    {
+      userId: 'u_demo',
+      department: 'finance',
+      message: 'Buy me Oracle.'
+    },
+    {
+      userId: 'u_demo',
+      department: 'marketing',
+      message: 'Please purchase 10 Figma Enterprise seats for the marketing department.'
+    },
+  ];
+
+  const STATUS_LABEL = {
+    COMPLETED: 'Completed',
+    AWAITING_HUMAN_APPROVAL: 'Pending Approval',
+    NEEDS_CLARIFICATION: 'Needs Clarification',
+    REJECTED: 'Rejected',
+    FAILED: 'Failed',
+  };
+
+  const STATUS_CLASS = {
+    COMPLETED: 'badge-success',
+    AWAITING_HUMAN_APPROVAL: 'badge-warning',
+    NEEDS_CLARIFICATION: 'badge-info',
+    REJECTED: 'badge-danger',
+    FAILED: 'badge-danger',
+  };
+
+  const RISK_CLASS = {
+    LOW: 'risk-low',
+    MEDIUM: 'risk-med',
+    HIGH: 'risk-high',
+  };
+
+  const ACTION_LABEL = {
+    CREATE_DRAFT_PO: 'Create Draft PO',
+    NEED_HUMAN_APPROVAL: 'Requires Approval',
+    REJECT: 'Rejected',
+    ASK_CLARIFICATION: 'Needs Clarification',
+  };
+
+  function fmt(amount, currency) {
+    try {
+      return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency || 'USD' }).format(amount);
+    } catch {
+      return `${currency || 'USD'} ${amount}`;
+    }
+  }
+
+  function escHtml(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  async function submitRequest(userId, department, message) {
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Running…';
+
+    try {
+      const res = await fetch(`${API_BASE}/agent/run`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId, department, message }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        renderError(data.detail || `Error ${res.status}`);
+        return;
+      }
+      renderResult(data);
+    } catch (e) {
+      renderError(e.message);
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = 'Submit Request';
+    }
+  }
+
+  async function approveRun(runId, approved) {
+    const approverId = document.getElementById('approver-id')?.value.trim() || 'approver_demo';
+    const comment = document.getElementById('approval-comment')?.value.trim() || undefined;
+    const errEl = document.getElementById('approve-error');
+    const btns = document.querySelectorAll('.approve-action-btn');
+    btns.forEach(b => b.disabled = true);
+
+    try {
+      const res = await fetch(`${API_BASE}/agent/runs/${encodeURIComponent(runId)}/approve`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ approver_id: approverId, approved, comment }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        if (errEl) errEl.textContent = data.detail || `Error ${res.status}`;
+        btns.forEach(b => b.disabled = false);
+        return;
+      }
+      renderResult(data);
+    } catch (e) {
+      if (errEl) errEl.textContent = e.message;
+      btns.forEach(b => b.disabled = false);
+    }
+  }
+
+  async function clarifyRun(runId) {
+    const answer = document.getElementById('clarify-answer')?.value.trim();
+    if (!answer) return;
+    const errEl = document.getElementById('clarify-error');
+    const btn = document.getElementById('clarify-btn');
+    if (btn) btn.disabled = true;
+
+    try {
+      const res = await fetch(`${API_BASE}/agent/runs/${encodeURIComponent(runId)}/clarify`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ answer }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        if (errEl) errEl.textContent = data.detail || `Error ${res.status}`;
+        if (btn) btn.disabled = false;
+        return;
+      }
+      renderResult(data);
+    } catch (e) {
+      if (errEl) errEl.textContent = e.message;
+      if (btn) btn.disabled = false;
+    }
+  }
+
+  function renderToolCalls(toolCalls) {
+    if (!toolCalls || toolCalls.length === 0) return '';
+    const items = toolCalls.map(tc => {
+      const st = (tc.status || '').toUpperCase();
+      const cls = st === 'SUCCESS' ? 'trace-success' : st === 'BLOCKED' ? 'trace-blocked' : 'trace-error';
+      const statusCls = st === 'SUCCESS' ? 'badge-success' : st === 'BLOCKED' ? 'badge-warning' : 'badge-danger';
+      const inputJson = tc.input ? JSON.stringify(tc.input, null, 2) : null;
+      const outputJson = tc.output ? JSON.stringify(tc.output, null, 2) : null;
+      const ioSection = (inputJson || outputJson) ? `
+        <details class="trace-details">
+          <summary>Input / Output</summary>
+          ${inputJson ? `<div style="margin-bottom:6px"><div style="font-size:11px;color:var(--text-muted);margin-bottom:2px">INPUT</div><pre class="trace-pre">${escHtml(inputJson)}</pre></div>` : ''}
+          ${outputJson ? `<div><div style="font-size:11px;color:var(--text-muted);margin-bottom:2px">OUTPUT</div><pre class="trace-pre">${escHtml(outputJson)}</pre></div>` : ''}
+        </details>` : '';
+      const errorSection = tc.error ? `<div class="trace-error-msg">Error: ${escHtml(tc.error)}</div>` : '';
+      const riskBadge = tc.risk_level ? `<span class="badge ${RISK_CLASS[tc.risk_level] || 'badge-neutral'}">${escHtml(tc.risk_level)}</span>` : '';
+      return `
+        <div class="trace-item ${cls}">
+          <div class="trace-header">
+            <span class="trace-tool">${escHtml(tc.tool)}</span>
+            <span class="badge ${statusCls}">${escHtml(tc.status)}</span>
+            ${riskBadge}
+          </div>
+          ${ioSection}
+          ${errorSection}
+        </div>`;
+    }).join('');
+
+    return `
+      <button class="trace-toggle" onclick="toggleTrace(this)">
+        <span>▶</span> Tool Calls (${toolCalls.length})
+      </button>
+      <div class="trace-list" hidden>${items}</div>`;
+  }
+
+  function renderResult(data) {
+    const content = document.getElementById('result-content');
+    const empty = document.getElementById('empty-state');
+
+    const runIdShort = data.run_id ? data.run_id.slice(0, 14) + '…' : '—';
+    const statusKey = (data.status || '').toUpperCase();
+    const statusLabel = STATUS_LABEL[statusKey] || data.status;
+    const statusCls = STATUS_CLASS[statusKey] || 'badge-neutral';
+
+    // Decision card
+    let decisionHtml = '';
+    if (data.decision) {
+      const d = data.decision;
+      const actionLabel = ACTION_LABEL[d.action] || d.action;
+      const riskCls = RISK_CLASS[d.risk_level] || 'badge-neutral';
+      const flags = (d.policy_flags || []).map(f => `<span class="flag-chip">${escHtml(f)}</span>`).join('');
+      decisionHtml = `
+        <div class="card">
+          <div class="card-title">Decision</div>
+          <div class="decision-row">
+            <span class="decision-action">${escHtml(actionLabel)}</span>
+            ${d.risk_level ? `<span class="badge ${riskCls}">${escHtml(d.risk_level)} risk</span>` : ''}
+          </div>
+          ${d.reason ? `<p class="reason">${escHtml(d.reason)}</p>` : ''}
+          ${flags ? `<div class="flags">${flags}</div>` : ''}
+        </div>`;
+    }
+
+    // Draft PO card
+    let poHtml = '';
+    if (data.draft_po) {
+      const po = data.draft_po;
+      poHtml = `
+        <div class="card po-card">
+          <div class="card-title">Draft Purchase Order</div>
+          <table class="po-table">
+            <tr><td>PO ID</td><td><code style="font-size:12px">${escHtml(po.po_id || '—')}</code></td></tr>
+            <tr><td>Item</td><td>${escHtml(po.item || '—')}</td></tr>
+            <tr><td>Quantity</td><td>${escHtml(String(po.quantity ?? '—'))}</td></tr>
+            <tr><td>Unit Price</td><td>${fmt(po.unit_price, po.currency)}</td></tr>
+            <tr><td>Estimated Total</td><td><strong>${fmt(po.estimated_total, po.currency)}</strong></td></tr>
+            <tr><td>Department</td><td>${escHtml(po.department || '—')}</td></tr>
+            <tr><td>Status</td><td><span class="badge badge-success">${escHtml(po.status || 'DRAFT')}</span></td></tr>
+          </table>
+        </div>`;
+    }
+
+    // Tool calls
+    const toolHtml = renderToolCalls(data.tool_calls);
+
+    // Action block
+    let actionHtml = '';
+    const runId = data.run_id;
+    if (data.status === 'AWAITING_HUMAN_APPROVAL') {
+      const req = data.approval_request;
+      const reason = req?.reason || 'This request requires human review.';
+      actionHtml = `
+        <div class="action-block approve-block">
+          <h3>Human Approval Required</h3>
+          <p class="action-desc">${escHtml(reason)}</p>
+          <div class="field">
+            <label>Approver ID</label>
+            <input id="approver-id" type="text" value="approver_demo">
+          </div>
+          <div class="field">
+            <label>Comment (optional)</label>
+            <textarea id="approval-comment" rows="2" placeholder="Add a note…"></textarea>
+          </div>
+          <div class="action-row">
+            <button class="btn btn-success approve-action-btn" onclick="approveRun('${escHtml(runId)}', true)">Approve</button>
+            <button class="btn btn-danger approve-action-btn" onclick="approveRun('${escHtml(runId)}', false)">Reject</button>
+          </div>
+          <div class="action-error" id="approve-error"></div>
+        </div>`;
+    } else if (data.status === 'NEEDS_CLARIFICATION') {
+      const req = data.clarification_request;
+      const question = req?.question || 'Please provide more information.';
+      actionHtml = `
+        <div class="action-block clarify-block">
+          <h3>Clarification Needed</h3>
+          <p class="action-desc">${escHtml(question)}</p>
+          <div class="field">
+            <label>Your Answer</label>
+            <textarea id="clarify-answer" rows="2" placeholder="e.g. 2 licenses"></textarea>
+          </div>
+          <div class="action-row">
+            <button class="btn btn-primary" id="clarify-btn" onclick="clarifyRun('${escHtml(runId)}')">Submit Answer</button>
+          </div>
+          <div class="action-error" id="clarify-error"></div>
+        </div>`;
+    }
+
+    content.innerHTML = `
+      <div class="run-header">
+        <span class="run-id">${escHtml(runIdShort)}</span>
+        <span class="badge ${statusCls}">${escHtml(statusLabel)}</span>
+      </div>
+      ${actionHtml}
+      ${decisionHtml}
+      ${poHtml}
+      ${toolHtml}
+    `;
+
+    content.hidden = false;
+    empty.hidden = true;
+  }
+
+  function renderError(msg) {
+    const content = document.getElementById('result-content');
+    const empty = document.getElementById('empty-state');
+    content.innerHTML = `<p style="color:var(--danger);font-size:13px">Error: ${escHtml(msg)}</p>`;
+    content.hidden = false;
+    empty.hidden = true;
+  }
+
+  function toggleTrace(btn) {
+    const list = btn.nextElementSibling;
+    const arrow = btn.querySelector('span');
+    if (list.hidden) {
+      list.hidden = false;
+      arrow.textContent = '▼';
+    } else {
+      list.hidden = true;
+      arrow.textContent = '▶';
+    }
+  }
+
+  // Wire up events
+  document.getElementById('request-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const userId = document.getElementById('user-id').value.trim();
+    const department = document.getElementById('department').value.trim();
+    const message = document.getElementById('message').value.trim();
+    if (!message) return;
+    await submitRequest(userId, department, message);
+  });
+
+  document.querySelectorAll('.quick-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const s = SCENARIOS[parseInt(btn.dataset.scenario, 10)];
+      document.getElementById('user-id').value = s.userId;
+      document.getElementById('department').value = s.department;
+      document.getElementById('message').value = s.message;
+    });
+  });
+</script>
+</body>
+</html>

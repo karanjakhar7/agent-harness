@@ -1,0 +1,11 @@
+{
+  "marketing": {
+    "remaining_budget_usd": 10000
+  },
+  "engineering": {
+    "remaining_budget_usd": 20000
+  },
+  "finance": {
+    "remaining_budget_usd": 3000
+  }
+}

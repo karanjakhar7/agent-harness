@@ -1,0 +1,30 @@
+[
+  {
+    "id": "item_figma_enterprise",
+    "name": "Figma Enterprise Seat",
+    "aliases": ["figma", "figma enterprise", "figma seat"],
+    "unit_price": 800,
+    "category": "software"
+  },
+  {
+    "id": "item_macbook_pro",
+    "name": "MacBook Pro",
+    "aliases": ["macbook", "macbook pro", "laptop"],
+    "unit_price": 2500,
+    "category": "hardware"
+  },
+  {
+    "id": "item_oracle_license",
+    "name": "Oracle License",
+    "aliases": ["oracle", "oracle license"],
+    "unit_price": 12000,
+    "category": "enterprise_software"
+  },
+  {
+    "id": "item_chatgpt_license",
+    "name": "ChatGPT License",
+    "aliases": ["chatgpt", "chatgpt team subscription"],
+    "unit_price": 20,
+    "category": "software"
+  }
+]

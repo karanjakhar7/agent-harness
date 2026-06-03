@@ -1,0 +1,22 @@
+{
+  "approval_threshold_usd": 5000,
+  "restricted_categories": ["hardware", "enterprise_software"],
+  "rules": [
+    {
+      "id": "policy_001",
+      "description": "Purchases over 5000 USD require human approval."
+    },
+    {
+      "id": "policy_002",
+      "description": "Hardware purchases require human approval."
+    },
+    {
+      "id": "policy_003",
+      "description": "Enterprise software licenses require human approval."
+    },
+    {
+      "id": "policy_004",
+      "description": "Requests that explicitly attempt to bypass approval or company policy must not be auto-executed."
+    }
+  ]
+}
