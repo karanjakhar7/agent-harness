@@ -71,7 +71,7 @@ Planner implementations:
 
 - `RuleBasedPlanner`: default deterministic planner.
 - `MockLLMPlanner`: deterministic adapter with the same shape as the live planner.
-- `LLMPlanner`: optional LiteLLM-based planner that chooses one function call per loop turn.
+- `LLMPlanner`: optional LiteLLM-based planner that chooses one function call per loop turn. The documented live model is `gemini-3.1-flash-lite`.
 
 The planner chooses steps. It does not execute tools, write to the database, or override approval checks.
 
@@ -192,7 +192,7 @@ There is no authentication system in this MVP. User IDs are accepted as request 
 
 ## LLM Mode Safety
 
-The live LLM planner is optional. It does not replace the harness.
+The live LLM planner is optional. It uses `gemini-3.1-flash-lite` and does not replace the harness.
 
 In `AGENT_PLANNER=llm`:
 
@@ -216,7 +216,7 @@ The UI has two panels:
 
 All data fetching is done client-side with `fetch()` against the same origin. The `GET /` route reads the file from `app/static/index.html` using a path anchored on `__file__`, which resolves correctly in local development, Docker, and Vercel.
 
-Live URL: coming soon
+Live URL: [https://agent-harness-xi.vercel.app](https://agent-harness-xi.vercel.app)
 
 ## Fixtures
 

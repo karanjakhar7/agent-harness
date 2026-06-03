@@ -6,8 +6,8 @@ Minimal FastAPI backend that demonstrates a safe procurement agent harness. The 
 
 | | |
 |---|---|
-| **UI** | coming soon |
-| **API docs** | coming soon |
+| **UI** | [https://agent-harness-xi.vercel.app](https://agent-harness-xi.vercel.app) |
+| **API docs** | [https://agent-harness-xi.vercel.app/docs](https://agent-harness-xi.vercel.app/docs) |
 
 Open the UI to submit purchase requests interactively and watch the agent decide, approve, or ask for clarification in real time. The API docs cover every endpoint in detail.
 
@@ -175,7 +175,7 @@ Live LLM planner through LiteLLM:
 uv sync --extra dev
 
 AGENT_PLANNER=llm \
-LLM_MODEL=provider/model \
+LLM_MODEL=gemini-3.1-flash-lite \
 uvicorn main:app --reload
 ```
 
@@ -183,7 +183,7 @@ The app does not load `.env` files. Provider credentials must already exist in t
 
 Live LLM settings:
 
-- `LLM_MODEL`: required for `AGENT_PLANNER=llm`.
+- `LLM_MODEL`: required for `AGENT_PLANNER=llm`; this project uses `gemini-3.1-flash-lite`.
 - `LLM_TIMEOUT_SECONDS`: defaults to `20`.
 - `LLM_MAX_RETRIES`: defaults to `1`.
 - `LLM_TEMPERATURE`: defaults to `0`.
